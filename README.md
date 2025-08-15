@@ -1,28 +1,28 @@
 Three.js Shooter
 =================
 
-Kurzes Minimalprojekt: Ein stabil laufender 3D-Shooter im Browser mit Three.js.
+Small minimal project: a stable 3D shooter in the browser using Three.js.
 
 Features
-- Pointer-lock Freigabe (Klick Start)
-- WASD Bewegung
-- Maus zum Zielen
-- Linksklick zum Schießen
-- Einfache Ziele (Kugeln) die beim Treffer verschwinden
-- Fixed-timestep Update für stabile Physik
+- Pointer lock (click to start)
+- WASD movement
+- Mouse to aim
+- Left click to shoot
+- Simple targets (spheres) that disappear when hit
+- Fixed-timestep update for stable physics
 
-Schnellstart
+Quickstart
 
-1. Node.js (>=16) und npm installiert
-2. In Projektverzeichnis:
+1. Ensure Node.js (>=16) and npm are installed
+2. In the project folder:
 
 ```bash
 npm install
 npm run dev
 ```
 
-3. Öffne http://localhost:5173 im Browser
+3. Open http://localhost:5173 in your browser
 
-Anmerkungen
-- Das Spiel ist minimal und darauf ausgelegt, stabil und einfach zu verstehen zu sein.
-- Erweiterungen: Gegner mit Bewegung, einfache physik via cannon-es, WebXR, mobile touch controls.
+Notes
+- The project is minimal and designed to be stable and easy to understand.
+- Possible extensions: moving enemies, basic physics (cannon-es), WebXR, mobile touch controls.

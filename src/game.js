@@ -117,7 +117,7 @@ export default class Game {
     this.currentWeaponIndex = 2; // start with SMG
   this.unlocked = { shotgun: false, sniper: false, smg: true };
   this.money = 50; // starting money
-  this.health = 100; // Gesundheit hinzugefügt
+  this.health = 100; // health added
   this.maxHealth = 100;
   this.buildingPositions = [];
   // shooting / autoshoot state
@@ -167,7 +167,7 @@ export default class Game {
       for (let j = -2; j <= 2; j += 2) {
         const streetLight = new THREE.PointLight(0xfff1b6, 0.8, 25, 2);
         streetLight.position.set(i * 30, 4, j * 40 - 100);
-        streetLight.castShadow = false; // Keine Schatten für Performance
+      streetLight.castShadow = false; // no shadows for performance
         this.scene.add(streetLight);
       }
     }
@@ -251,7 +251,7 @@ export default class Game {
           const box = new THREE.Mesh(new THREE.BoxGeometry(bw, bh, bd), mat);
           box.position.set(bx, bh/2, bz);
 
-          // Mehrere Türen und Eingänge für bessere Zugänglichkeit
+          // Multiple doors and entrances for better accessibility
           const doorDepth = 0.12;
           const doorGeo = new THREE.BoxGeometry(0.9, 1.95, doorDepth);
           const doorMat = new THREE.MeshStandardMaterial({ color: 0x6b3b2b });
@@ -270,7 +270,7 @@ export default class Game {
           mainDoor.userData.isDoor = true; mainDoor.userData.open = false;
           box.add(mainDoor);
           
-          // Hintereingang für größere Gebäude (Schleichweg)
+          // Back entrance for larger buildings (sneak path)
           if (bw > 12 && bd > 12) {
             const backDoor = new THREE.Mesh(doorGeo, new THREE.MeshStandardMaterial({ color: 0x4a2a1a }));
             if (face === 'x+') {
@@ -289,7 +289,7 @@ export default class Game {
             box.add(backDoor);
           }
           
-          // Seiteneingänge für sehr große Gebäude
+          // Side entrances for very large buildings
           if (bw > 16 && bd > 16) {
             const sideDoor = new THREE.Mesh(doorGeo, new THREE.MeshStandardMaterial({ color: 0x5a3a2a }));
             sideDoor.position.set(bw/4, -bh/2 + 1.0, bd/2 - doorDepth/2 - 0.02);
@@ -332,21 +332,22 @@ export default class Game {
               
               // Fensterrahmen tief in der Wand
               const frontFrame = new THREE.Mesh(new THREE.BoxGeometry(ww + 0.15, wh + 0.15, 0.12), frameMat);
-              frontFrame.position.set(xOffset, wy, bd/2 - 0.06);
+              // move frame slightly outwards to avoid z-fighting with glass
+              frontFrame.position.set(xOffset, wy, bd/2 + 0.06);
               frontWindow.add(frontFrame);
               
-              // Fensterglas leicht nach außen versetzt
+              // Fensterglas leicht nach außen versetzt (verhindert Z-Fighting)
               const frontGlass = new THREE.Mesh(new THREE.PlaneGeometry(ww - 0.1, wh - 0.1), winMat);
-              frontGlass.position.set(xOffset, wy, bd/2 + 0.05);
+              frontGlass.position.set(xOffset, wy, bd/2 + 0.08);
               frontWindow.add(frontGlass);
               
               // Fensterkreuz
               const frontCrossV = new THREE.Mesh(new THREE.BoxGeometry(0.04, wh - 0.1, 0.02), frameMat);
-              frontCrossV.position.set(xOffset, wy, bd/2 + 0.04);
+              frontCrossV.position.set(xOffset, wy, bd/2 + 0.08);
               frontWindow.add(frontCrossV);
               
               const frontCrossH = new THREE.Mesh(new THREE.BoxGeometry(ww - 0.1, 0.04, 0.02), frameMat);
-              frontCrossH.position.set(xOffset, wy, bd/2 + 0.04);
+              frontCrossH.position.set(xOffset, wy, bd/2 + 0.08);
               frontWindow.add(frontCrossH);
               
               box.add(frontWindow);
@@ -355,11 +356,12 @@ export default class Game {
               const backWindow = new THREE.Group();
               
               const backFrame = new THREE.Mesh(new THREE.BoxGeometry(ww + 0.15, wh + 0.15, 0.12), frameMat);
-              backFrame.position.set(xOffset, wy, -bd/2 + 0.06);
+              // move frame slightly outwards on the back face
+              backFrame.position.set(xOffset, wy, -bd/2 - 0.06);
               backWindow.add(backFrame);
               
               const backGlass = new THREE.Mesh(new THREE.PlaneGeometry(ww - 0.1, wh - 0.1), winMat);
-              backGlass.position.set(xOffset, wy, -bd/2 - 0.05);
+              backGlass.position.set(xOffset, wy, -bd/2 - 0.08);
               backGlass.rotation.y = Math.PI;
               backWindow.add(backGlass);
               
@@ -371,7 +373,8 @@ export default class Game {
                 const leftWindow = new THREE.Group();
                 
                 const leftFrame = new THREE.Mesh(new THREE.BoxGeometry(0.12, wh + 0.15, ww + 0.15), frameMat);
-                leftFrame.position.set(-bw/2 + 0.06, wy, xOffset * 0.8);
+                // move left frame a bit outward on negative X face
+                leftFrame.position.set(-bw/2 - 0.06, wy, xOffset * 0.8);
                 leftWindow.add(leftFrame);
                 
                 const leftGlass = new THREE.Mesh(new THREE.PlaneGeometry(ww - 0.1, wh - 0.1), winMat);
@@ -385,7 +388,8 @@ export default class Game {
                 const rightWindow = new THREE.Group();
                 
                 const rightFrame = new THREE.Mesh(new THREE.BoxGeometry(0.12, wh + 0.15, ww + 0.15), frameMat);
-                rightFrame.position.set(bw/2 - 0.06, wy, xOffset * 0.8);
+                // move right frame a bit outward on positive X face
+                rightFrame.position.set(bw/2 + 0.06, wy, xOffset * 0.8);
                 rightWindow.add(rightFrame);
                 
                 const rightGlass = new THREE.Mesh(new THREE.PlaneGeometry(ww - 0.1, wh - 0.1), winMat);
@@ -441,7 +445,7 @@ export default class Game {
               rightRailing.position.set(balcony.geometry.parameters.width/2 - 0.05, 0.65, 0);
               balcony.add(rightRailing);
               
-              // Balkon-Tür
+              // Balcony door
               const balconyDoorGeo = new THREE.BoxGeometry(0.9, 2.0, 0.12);
               const balconyDoorMat = new THREE.MeshStandardMaterial({ color: 0x8b4513 });
               const balconyDoor = new THREE.Mesh(balconyDoorGeo, balconyDoorMat);
@@ -457,11 +461,11 @@ export default class Game {
           }
 
           box.userData.hittable = true;
-          box.castShadow = true; // Gebäude werfen Schatten
-          box.receiveShadow = true; // Gebäude empfangen Schatten
+          box.castShadow = true; // buildings cast shadows
+          box.receiveShadow = true; // buildings receive shadows
           
-          // Schatten für Gebäude-Komponenten aktivieren
-          // falls Haupttür existiert, aktiviere Schatten für sie
+          // enable shadows for building components
+          // if main door exists, enable shadows for it
           if (typeof mainDoor !== 'undefined' && mainDoor) {
             mainDoor.castShadow = true;
             mainDoor.receiveShadow = true;
@@ -567,7 +571,7 @@ export default class Game {
       let onRoad = true;
       let attempts = 0;
       
-      // Versuche eine Position zu finden die nicht auf einer Straße oder in einem Gebäude ist
+  // Try to find a position that is not on a road or inside a building
       do {
         x = -150 + Math.random() * 300;
         z = -150 + Math.random() * 300;
@@ -606,7 +610,7 @@ export default class Game {
     this._updateHealthDisplay();
     this._updateMoneyDisplay();
 
-    // create shop overlay (hidden by default) with money display and buttons
+  // create shop overlay (hidden by default) with money display and buttons
     this.shopEl = document.createElement('div');
     this.shopEl.style.position = 'fixed';
     this.shopEl.style.left = '50%';
@@ -621,7 +625,7 @@ export default class Game {
     this.shopEl.style.zIndex = 9999;
     this.shopEl.innerHTML = `
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <h3 style="margin:0">Shop</h3>
+  <h3 style="margin:0">Shop</h3>
         <div>Money: $<span id="money">${this.money}</span></div>
       </div>
       <div id="shop-list" style="display:flex;flex-direction:column;gap:8px">
@@ -755,8 +759,8 @@ export default class Game {
             if (best) {
               this._openInterior(best);
             } else {
-              // Zeige Hinweis wenn keine Tür in der Nähe
-              this._showTemporaryMessage("Keine Tür in der Nähe. Gehe näher an ein Gebäude heran.");
+              // Show hint when no door is nearby
+              this._showTemporaryMessage("No door nearby. Move closer to a building.");
             }
           }
         } break;
@@ -1188,7 +1192,7 @@ export default class Game {
     ground.rotation.x = -Math.PI / 2;
     ground.userData.hittable = true;
     ground.receiveShadow = true; // Boden empfängt Schatten
-    ground.castShadow = false; // Boden wirft keine Schatten
+  ground.castShadow = false; // ground does not cast shadows
     this.scene.add(ground);
   }
 
@@ -2107,16 +2111,16 @@ export default class Game {
 
   _canMoveTo(currentPos, newPos) {
     // Einfache Kollisionserkennung mit Gebäuden
-    // Gebäude sind in einem 20x20 Grid angeordnet
+  // Buildings are arranged in a 20x20 grid
     for (let x = 0; x < 20; x++) {
       for (let z = 0; z < 20; z++) {
         const buildingX = (x - 10) * 20;
         const buildingZ = (z - 10) * 20;
         
-        // Prüfe ob die neue Position in einem Gebäude liegt
+        // Check if the new position is inside a building
         if (newPos.x > buildingX - 8 && newPos.x < buildingX + 8 &&
             newPos.z > buildingZ - 8 && newPos.z < buildingZ + 8) {
-          return false; // Kollision mit Gebäude
+          return false; // collision with building
         }
       }
     }
@@ -2376,7 +2380,7 @@ export default class Game {
   }
 
   _interactWithNearestDoor() {
-    // Finde nächste Tür zum Öffnen/Schließen
+  // Find nearest door to open/close
     let nearestDoor = null;
     let nearestDist = 2.5 * 2.5;
     
@@ -2401,7 +2405,7 @@ export default class Game {
       const currentRot = nearestDoor.rotation.y;
       const targetRot = isOpen ? currentRot + Math.PI/2 : currentRot - Math.PI/2;
       
-      // Animiere Tür
+  // Animate door
       const startTime = performance.now();
       const duration = 400;
       
@@ -2417,9 +2421,9 @@ export default class Game {
       };
       
       requestAnimationFrame(animateDoor);
-      this._showTemporaryMessage(isOpen ? 'Tür geschlossen' : 'Tür geöffnet', 1000);
+  this._showTemporaryMessage(isOpen ? 'Door closed' : 'Door opened', 1000);
     } else {
-      this._showTemporaryMessage('Keine Tür in der Nähe', 1000);
+  this._showTemporaryMessage('No door nearby', 1000);
     }
   }
 
@@ -2454,7 +2458,7 @@ export default class Game {
       y: this.minimapCenter.y + (worldZ - playerZ) * (canvas.height / this.minimapScale)
     });
     
-    // Zeichne Gebäude
+  // Draw buildings
     ctx.fillStyle = 'rgba(180, 180, 180, 0.8)';
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
     ctx.lineWidth = 1;
@@ -2641,9 +2645,13 @@ export default class Game {
         const btn = document.createElement('button'); btn.textContent = `${f+1}`; btn.style.display = 'block'; btn.style.margin = '4px 0'; btn.onclick = () => {
           // require player to be inside elevator car to operate
           if (!ev.car) return;
+          // robuster Check: prüfe XZ-Footprint + Y-Toleranz anstatt containsPoint (floating point issues)
           const carBox = new THREE.Box3().setFromObject(ev.car);
           const pos = this.yawObject.position;
-          if (!carBox.containsPoint(pos)) {
+          const xIn = pos.x >= carBox.min.x - 0.3 && pos.x <= carBox.max.x + 0.3;
+          const zIn = pos.z >= carBox.min.z - 0.3 && pos.z <= carBox.max.z + 0.3;
+          const yIn = pos.y >= carBox.min.y - 0.6 && pos.y <= carBox.max.y + 0.6;
+          if (!(xIn && zIn && yIn)) {
             // nudge player message
             btn.textContent = 'Stand inside car';
             setTimeout(() => { btn.textContent = `${f+1}`; }, 800);
@@ -2715,7 +2723,7 @@ export default class Game {
   _updateInteractionPrompt() {
     if (!this.pointerLocked) return;
     
-    // Finde nächste Tür
+  // Find nearest door
     let nearestDoor = null;
     let nearestDist = 3.5 * 3.5;
     
@@ -2731,7 +2739,7 @@ export default class Game {
     const existingPrompt = document.getElementById('interaction-prompt');
     if (existingPrompt) existingPrompt.remove();
     
-    // Zeige Prompt wenn Tür in der Nähe
+  // Show prompt when door is nearby
     if (nearestDoor || this.insideBuilding) {
       const promptEl = document.createElement('div');
       promptEl.id = 'interaction-prompt';
@@ -2749,9 +2757,9 @@ export default class Game {
       promptEl.style.border = '2px solid rgba(255, 255, 255, 0.4)';
       
       if (this.insideBuilding) {
-        promptEl.textContent = 'Drücke E um das Gebäude zu verlassen';
+  promptEl.textContent = 'Press E to leave the building';
       } else {
-        promptEl.textContent = 'Drücke E um das Gebäude zu betreten';
+  promptEl.textContent = 'Press E to enter the building';
       }
       
       document.body.appendChild(promptEl);
@@ -2773,7 +2781,7 @@ export default class Game {
     if (this.unlocked[id]) return;
     if (this.money < cost) {
       console.log('Not enough money');
-      this._showTemporaryMessage('Nicht genug Geld!');
+  this._showTemporaryMessage('Not enough money!');
       return;
     }
     this.money -= cost;
